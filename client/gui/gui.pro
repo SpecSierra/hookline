@@ -45,8 +45,6 @@ OTHER_FILES += qml/phonehook.qml \
     qml/popup/images/ph-logo.png \
     qml/pages/PageBotDownload.qml \
     qml/pages/PageDownloadWait.qml \
-    qml/images/new-48.png \
-    qml/images/approval-48.png \
     qml/setting/SettingPassword.qml \
     qml/popup/gui2.qml \
     qml/pages/PageSearchStart.qml \
@@ -54,12 +52,11 @@ OTHER_FILES += qml/phonehook.qml \
     qml/pages/PageBlockStart.qml \
     qml/pages/PageBlockContact.qml \
     qml/pages/PageBlockHistory.qml \
-    qml/pages/ControlBigButton.qml \
     qml/pages/PageCallLogStart.qml \
     qml/pages/PageBlockAddManual.qml \
     qml/pages/PageBlockAddSource.qml \
-    qml/pages/ListPopup.qml \
-    qml/pages/ItemSelector2.qml
+    qml/pages/PageSources.qml \
+    qml/pages/StartItem.qml
 
 # to disable building translations every time, comment out the
 # following CONFIG line

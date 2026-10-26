@@ -4,133 +4,100 @@ import Sailfish.Silica 1.0
 Page {
     id: root
 
-    //anchors.fill: parent
-    property variant contextItem
-
-    SilicaFlickable {
+    SilicaListView {
+        id: callView
         anchors.fill: parent
+        model: _calls.call_log
 
-        contentHeight: header.height + callView.height + 50
-
-        PageHeader {
-            id: header
-            title: _calls.filter == "missed" ? qsTr("Missed") :
-                   _calls.filter == "incoming" ? qsTr("Incoming") :
-                   _calls.filter == "outgoing" ? qsTr("Outgoing") :
-                                                 qsTr("Calls");
+        header: PageHeader {
+            title: qsTr("Call log")
+            description: _calls.filter == "incoming" ? qsTr("Incoming calls")
+                       : _calls.filter == "outgoing" ? qsTr("Outgoing calls")
+                                                     : qsTr("Missed calls")
         }
-
 
         PullDownMenu {
-/*
             MenuItem {
-                text: qsTr("Number Test")
-                onClicked: {
-                    onClicked: pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: "Bot Test", botId: 0});
-                }
+                text: qsTr("Outgoing calls")
+                onClicked: _calls.filter = "outgoing"
             }
-*/
-
             MenuItem {
-                text: qsTr("Incoming Calls")
-                onClicked: {
-                    onClicked: _calls.filter = "incoming"
-                }
+                text: qsTr("Incoming calls")
+                onClicked: _calls.filter = "incoming"
             }
-
             MenuItem {
-                text: qsTr("Missed Calls")
-                onClicked: {
-                    onClicked: _calls.filter = "missed"
-                }
+                text: qsTr("Missed calls")
+                onClicked: _calls.filter = "missed"
             }
-
-            MenuItem {
-                text: qsTr("Outgoing Calls")
-                onClicked: {
-                    onClicked: _calls.filter = "outgoing"
-                }
-            }
-
         }
 
-        SilicaListView {
-            id: callView
-            model: _calls.call_log
-            anchors.top: header.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: contentHeight || 0
-            interactive: false
-            property Item contextMenu
+        ViewPlaceholder {
+            enabled: callView.count === 0
+            text: qsTr("No calls")
+        }
 
-            delegate: Item {
-                id: myListItem
-                property bool menuOpen: callView.contextMenu != null && callView.contextMenu.parent === myListItem
-                property string number: model.remoteUid
-                property string name: _blocks.contactNameFromNumber(model.remoteUid)
+        delegate: ListItem {
+            id: callItem
 
-                width: ListView.view.width
-                height: menuOpen ? callView.contextMenu.height + contentItem.height : contentItem.height
+            property string number: model.remoteUid
+            property string name: _blocks.contactNameFromNumber(model.remoteUid)
 
-                BackgroundItem {
-                    id: contentItem
+            contentHeight: Theme.itemSizeMedium
+            onClicked: _bots.testBot(0, number)
 
-                    Column {
-                        anchors.left: parent.left
-                        anchors.right: callCountLabel.left
-                        anchors.leftMargin: Theme.paddingMedium
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        Label {
-                            width: parent.width
-                            text: myListItem.name || myListItem.number
-                            color: contentItem.highlighted ? Theme.highlightColor : Theme.primaryColor
-                        }
-
-                        Label {
-                            font.pixelSize: Theme.fontSizeSmall
-                            width: parent.width
-                            text: new Date(model.recent_time*1000).toLocaleString(null, Locale.ShortFormat)
-                            color: contentItem.highlighted ? Theme.highlightColor : Theme.secondaryColor
-                        }
-                    }
-
-                    Label {
-                        id: callCountLabel
-                        anchors.right: parent.right
-                        text: model.call_count
-                        font.bold: true
-                        anchors.rightMargin: Theme.paddingLarge
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-
-                    onClicked: {
-                        contextItem = myListItem
-                        if (!callView.contextMenu)
-                            callView.contextMenu = contextMenuComponent.createObject(callView)
-                        callView.contextMenu.show(myListItem)
-                    }
+            menu: ContextMenu {
+                MenuItem {
+                    text: qsTr("Block")
+                    onClicked: pageStack.push(Qt.resolvedUrl("PageBlockAddManual.qml"),
+                                              { name: callItem.name, number: callItem.number })
+                }
+                MenuItem {
+                    text: qsTr("Copy number")
+                    onClicked: Clipboard.text = callItem.number
                 }
             }
 
-            Component {
-                id: contextMenuComponent
-                ContextMenu {
-                    MenuItem {
-                        text: qsTr("Lookup");
-                        onClicked: {
-                            _bots.testBot(0, contextItem.number);
-                        }
-                    }
-                    MenuItem {
-                        text: qsTr("Block");
-                        onClicked: {
-                            pageStack.push(Qt.resolvedUrl("PageBlockAddManual.qml"), {name: contextItem.name, number: contextItem.number } )
-                        }
-                    }
+            Icon {
+                id: callIcon
+                x: Theme.horizontalPageMargin
+                anchors.verticalCenter: parent.verticalCenter
+                source: _calls.filter == "incoming" ? "image://theme/icon-m-incoming-call"
+                      : _calls.filter == "outgoing" ? "image://theme/icon-m-outgoing-call"
+                                                    : "image://theme/icon-m-missed-call"
+            }
+
+            Column {
+                anchors {
+                    left: callIcon.right; leftMargin: Theme.paddingLarge
+                    right: countLabel.left; rightMargin: Theme.paddingMedium
+                    verticalCenter: parent.verticalCenter
                 }
+                Label {
+                    width: parent.width
+                    text: callItem.name || callItem.number
+                    truncationMode: TruncationMode.Fade
+                    color: callItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                }
+                Label {
+                    width: parent.width
+                    text: new Date(model.recent_time * 1000).toLocaleString(Qt.locale(), Locale.ShortFormat)
+                    font.pixelSize: Theme.fontSizeExtraSmall
+                    color: callItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                }
+            }
+
+            Label {
+                id: countLabel
+                anchors {
+                    right: parent.right; rightMargin: Theme.horizontalPageMargin
+                    verticalCenter: parent.verticalCenter
+                }
+                // number of calls from this number
+                text: model.call_count > 1 ? model.call_count : ""
+                color: callItem.highlighted ? Theme.highlightColor : Theme.secondaryColor
             }
         }
+
+        VerticalScrollDecorator {}
     }
 }

@@ -67,6 +67,7 @@ void spam_lists::download() {
     m_entries.clear();
     m_pending = 0;
     m_failed = false;
+    m_patterns = 0;
     QNetworkReply *reply = m_net.get(listRequest(QUrl("https://app.saracroche.org/api/v2/lists")));
     connect(reply, &QNetworkReply::finished, [this, reply]() { gotIndex(reply); });
 }
@@ -104,6 +105,7 @@ void spam_lists::gotList(QNetworkReply *reply) {
         while (!reply->atEnd()) {
             QJsonObject entry = QJsonDocument::fromJson(reply->readLine()).object();
             m_entries << filterEntries(entry.value("pattern").toString());
+            ++m_patterns;
         }
     }
 
@@ -125,6 +127,7 @@ void spam_lists::gotList(QNetworkReply *reply) {
     qDebug() << "spam lists:" << m_entries.count() << "entries";
 
     setting::put("spam_lists_updated", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    setting::put("spam_lists_count", QString::number(m_patterns));
     m_filter->sync();
     check();
 }

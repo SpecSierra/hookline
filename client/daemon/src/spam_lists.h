@@ -33,6 +33,7 @@ private:
     QTimer m_timer;
     int m_pending = 0;
     bool m_failed = false;
+    int m_patterns = 0;
     QStringList m_entries;
 };
 

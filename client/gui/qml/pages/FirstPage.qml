@@ -1,263 +1,112 @@
-/*
-  Copyright (C) 2013 Jolla Ltd.
-  Contact: Thomas Perl <thomas.perl@jollamobile.com>
-  All rights reserved.
-
-  You may use this file under the terms of BSD license as follows:
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the Jolla Ltd nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR
-  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-
 import QtQuick 2.5
 import Sailfish.Silica 1.0
 
 Page {
     id: topPage
 
-    property variant remorseItem
-
-    function remorseDelete() {
-        remorseDeleteBot.execute(remorseItem,
-                                 "Deleting " + remorseItem.name,
-                                 function() {
-                                     console.log('do delete', remorseItem.id);
-                                     _bots.removeBot(remorseItem.id);
-                                 }, 5000);
+    function refresh() {
+        _blocks.initBlocks()
     }
 
-    function colorAlpha(c, alpha) {
-        return Qt.rgba(c.r, c.g, c.b, alpha);
-    }
+    onStatusChanged: if (status === PageStatus.Active) refresh()
 
-    // To enable PullDownMenu, place our content in a SilicaFlickable
     SilicaFlickable {
         anchors.fill: parent
-        contentHeight: column.height+header.height+50
+        contentHeight: column.height + Theme.paddingLarge
 
-        PageHeader {
-            id: header
-            title: qsTr("Phonehook")
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-        }
-
-
-        // PullDownMenu and PushUpMenu must be declared in SilicaFlickable, SilicaListView or SilicaGridView
         PullDownMenu {
-            enabled: _bots.daemonActive
-/*
-            MenuItem {
-                text: qsTr("Number Test")
-                onClicked: {
-                    onClicked: pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: "Bot Test", botId: 0});
-                }
-            }
-*/
-
             MenuItem {
                 text: qsTr("Settings")
-                onClicked: {
-                    onClicked: pageStack.push(Qt.resolvedUrl("PageAppSettings.qml"))
-                }
+                onClicked: pageStack.push(Qt.resolvedUrl("PageAppSettings.qml"))
             }
-
+            MenuItem {
+                text: qsTr("Look up a number")
+                enabled: _bots.daemonActive
+                onClicked: pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: qsTr("Look up a number"), botId: 0 })
+            }
         }
 
-        // Place our content in a Column.  The PageHeader is always placed at the top
-        // of the page, followed by our content.
         Column {
             id: column
-            width: topPage.width
-            spacing: Theme.paddingLarge
-            anchors.margins: Theme.paddingLarge
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: header.bottom
+            width: parent.width
 
-            Row {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                spacing: Theme.paddingLarge
-
-                ControlBigButton {
-                    link: "PageServerBotList.qml"
-                    icon: "../images/website-optimization.svg"
-                    text: qsTr("Data Sources")
-                }
-
-                ControlBigButton {
-                    link: "PageSearchStart.qml"
-                    icon: "../images/search-2.svg"
-                    text: qsTr("Search")
-                }
-
+            PageHeader {
+                title: qsTr("Phonehook")
+                description: qsTr("Caller lookup and call blocking")
             }
 
-            Row {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                spacing: Theme.paddingLarge
-
-
-
-                ControlBigButton {
-                    link: "PageBlockStart.qml"
-                    icon: "../images/restriction-shield.svg"
-                    text: qsTr("Blocks")
-                }
-
-                ControlBigButton {
-                    link: "PageCallLogStart.qml"
-                    icon: "../images/view-details.svg"
-                    text: qsTr("Call Log")
-                }
-
-            }
-
-
-
-            Label {
-                id: hi
-                wrapMode: Text.Wrap
-                textFormat: Text.RichText
-                text: qsTr("Daemon") + ": <b>" + (_bots.daemonActive ? qsTr("Running") : qsTr("Not Running")) + "</b>"
-                font.pixelSize: smallestScreen ? Theme.fontSizeSmall : Theme.fontSizeMedium
-            }
-
-            Button {
+            // Everything depends on the daemon: make a stopped one obvious
+            ListItem {
+                id: daemonItem
+                contentHeight: Theme.itemSizeMedium
                 visible: !_bots.daemonActive
-                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: _bots.startDaemon()
 
-                text: qsTr("Start Daemon")
-
-                onClicked: {
-                    _bots.startDaemon();
+                Icon {
+                    id: warningIcon
+                    x: Theme.horizontalPageMargin
+                    anchors.verticalCenter: parent.verticalCenter
+                    source: "image://theme/icon-m-warning"
+                    color: Theme.errorColor
+                }
+                Column {
+                    anchors {
+                        left: warningIcon.right; leftMargin: Theme.paddingMedium
+                        right: parent.right; rightMargin: Theme.horizontalPageMargin
+                        verticalCenter: parent.verticalCenter
+                    }
+                    Label {
+                        width: parent.width
+                        text: qsTr("Service not running")
+                        color: Theme.errorColor
+                    }
+                    Label {
+                        width: parent.width
+                        text: qsTr("Tap to start it. Calls are neither looked up nor blocked.")
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        color: Theme.secondaryColor
+                        wrapMode: Text.Wrap
+                    }
                 }
             }
 
-            Item {
-                height: 20
-                width: parent.width
+            StartItem {
+                icon: "image://theme/icon-m-device-lock"
+                title: qsTr("Blocking")
+                description: _blocks.db_blocks.count === 0
+                             ? qsTr("No rules")
+                             : qsTr("%n rule(s)", "", _blocks.db_blocks.count)
+                page: "PageBlockStart.qml"
             }
 
-            Label {
-                width: parent.width
-                text: qsTr("Installed Sources")
-                font.weight: Font.Bold
-                font.pixelSize: Theme.fontSizeMedium
-                color: Theme.primaryColor
-            }
-
-            Label {
-                //: No installed sources
-                text: qsTr("None")
-                visible: botView.model.count === 0
-            }
-
-            RemorseItem {
-                id: remorseDeleteBot
-            }
-
-            Connections {
-                target: _bots
-                onDaemonActiveChanged: {
-                    console.log('daemon active!');
+            StartItem {
+                icon: "image://theme/icon-m-cloud-download"
+                title: qsTr("Data sources")
+                description: {
+                    var lookups = _bots.daemonActive ? _bots.botList.count : 0
+                    var lists = _setting.get("spam_lists", "true") === "true"
+                    return qsTr("%n lookup source(s)", "", lookups)
+                            + (lists ? " · " + qsTr("French spam lists") : "")
                 }
+                page: "PageSources.qml"
             }
 
-            SilicaListView {
-                id: botView
-                model: _bots.daemonActive ? _bots.botList : []
+            StartItem {
+                icon: "image://theme/icon-m-history"
+                title: qsTr("Call log")
+                description: qsTr("Look up or block recent callers")
+                page: "PageCallLogStart.qml"
+            }
 
-                height: (contentHeight || 0) + 100
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                anchors.leftMargin: -Theme.paddingLarge
-                anchors.rightMargin: -Theme.paddingLarge
-
-                interactive: false
+            StartItem {
+                icon: "image://theme/icon-m-search"
+                title: qsTr("Search")
+                description: qsTr("Find people and businesses")
+                page: "PageSearchStart.qml"
                 enabled: _bots.daemonActive
-
-                property Item contextMenu
-
-                delegate: Item {
-                    id: myListItem
-                    property bool menuOpen: botView.contextMenu != null && botView.contextMenu.parent === myListItem
-                    property int id: model.id
-                    property string name: model.name
-
-                    width: ListView.view.width
-                    height: menuOpen ? botView.contextMenu.height + contentItem.height : contentItem.height
-
-
-                    BackgroundItem {
-                        id: contentItem
-
-                        Label {
-                            anchors.left: parent.left
-                            anchors.leftMargin: Theme.paddingLarge
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: model.name
-                            color: contentItem.highlighted ? Theme.highlightColor : Theme.primaryColor
-                        }
-
-                        Label {
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: parent.right
-                            anchors.rightMargin: Theme.paddingLarge
-                            text: 'Rev. ' + model.revision
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: contentItem.highlighted ? Theme.highlightColor : Theme.primaryColor
-                        }
-
-                        onPressAndHold: {
-                            remorseItem = myListItem;
-                            if (!botView.contextMenu)
-                                botView.contextMenu = contextMenuComponent.createObject(botView)
-                            botView.contextMenu.open(myListItem)
-                        }
-
-                        onClicked: {
-                            remorseItem = myListItem;
-                            pageStack.push(Qt.resolvedUrl("PageBotDetails.qml"), { botId: model.id })
-                            console.log("clicked on bot")
-                        }
-                    }
-                }
-                Component {
-                    id: contextMenuComponent
-                    ContextMenu {
-                           MenuItem {
-                            text: qsTr("Delete");
-                            onClicked: {
-                                remorseDelete();
-                            }
-                        }
-                    }
-                }
             }
         }
+
+        VerticalScrollDecorator {}
     }
 }

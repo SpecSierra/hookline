@@ -8,74 +8,64 @@ Dialog {
     property string name
 
     acceptDestinationAction: PageStackAction.Pop
-
-    onAccepted: {
-        _blocks.addManualBlock(blockName.text,blockNumber.text,blockHidden.checked);
-    }
-
     canAccept: blockHidden.checked || (blockName.text != '' && blockNumber.text != '')
+
+    onAccepted: _blocks.addManualBlock(blockName.text, blockNumber.text, blockHidden.checked)
 
     SilicaFlickable {
         anchors.fill: parent
-        contentHeight: clmn.height+header.height+50
-
-        DialogHeader {
-            id: header
-            acceptText: qsTr("Add Block")
-        }
+        contentHeight: column.height + Theme.paddingLarge
 
         Column {
-            id: clmn
-            spacing: Theme.paddingLarge
-            anchors.fill: parent
-            anchors.topMargin: header.height
-            anchors.leftMargin: Theme.paddingLarge
-            anchors.rightMargin: Theme.paddingLarge
+            id: column
+            width: parent.width
 
-            Text {
-                color: Theme.secondaryColor
-                text: qsTr("Add a number to be blocked. Number may be either local or international variety. Use * for wildcard matching.")
-                font.pixelSize: Theme.fontSizeSmall
-                width: parent.width
-                wrapMode: Text.Wrap
-            }
-
-            Item {
-                height: 50
-                width: parent.width
+            DialogHeader {
+                acceptText: qsTr("Block")
+                title: qsTr("Block number")
             }
 
             TextSwitch {
-                width: parent.width
                 id: blockHidden
                 //: toggle switch for hidden number
-                text: qsTr("Hidden number")
-                checked: false
-                onCheckedChanged: {
-
-                }
+                text: qsTr("Hidden numbers")
+                description: qsTr("Calls without caller ID")
             }
 
             TextField {
                 id: blockName
                 width: parent.width
-                //: placeholder for name input
-                placeholderText: qsTr("Name")
                 visible: !blockHidden.checked
+                //: placeholder for name input
+                label: qsTr("Name")
+                placeholderText: label
                 text: name
-                anchors.horizontalCenter: parent.horizontalCenter
+                EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                EnterKey.onClicked: blockNumber.focus = true
             }
 
             TextField {
                 id: blockNumber
-                visible: !blockHidden.checked
                 width: parent.width
+                visible: !blockHidden.checked
                 //: placeholder for number input
-                placeholderText: qsTr("Phone Number")
+                label: qsTr("Phone number")
+                placeholderText: label
                 text: number
-                anchors.horizontalCenter: parent.horizontalCenter
                 inputMethodHints: Qt.ImhDialableCharactersOnly
             }
+
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                visible: !blockHidden.checked
+                text: qsTr("Local or international format. End with * to block every number starting with it, for example 0899*.")
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryHighlightColor
+                wrapMode: Text.Wrap
+            }
         }
+
+        VerticalScrollDecorator {}
     }
 }

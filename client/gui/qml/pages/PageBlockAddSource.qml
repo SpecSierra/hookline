@@ -1,61 +1,44 @@
 import QtQuick 2.5
 import Sailfish.Silica 1.0
 
+// Block the numbers that a lookup source reports as spam
 Page {
     id: root
 
-    Label {
-        text: qsTr("No sources to add")
-        anchors.horizontalCenter: root.horizontalCenter
-        anchors.verticalCenter: root.verticalCenter
-        font.pixelSize: Theme.fontSizeLarge
-        visible: blockSourceView.model.count === 0
-    }
-
-    SilicaFlickable {
+    SilicaListView {
+        id: blockSourceView
         anchors.fill: parent
-        contentHeight: blockSourceView.height+header.height+50
+        model: _blocks.sources
 
-        PageHeader {
-            id: header
-            title: qsTr("Add Block Source")
+        header: PageHeader {
+            title: qsTr("Block lookup source results")
+            description: qsTr("Numbers the source reports as spam")
         }
 
-        SilicaListView {
-            id: blockSourceView
-            model: _blocks.sources
-            anchors.top: header.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: contentHeight || 0
-            //anchors.fill: parent
-            interactive: false
+        ViewPlaceholder {
+            enabled: blockSourceView.count === 0
+            text: qsTr("No lookup source to add")
+            hintText: qsTr("Only some lookup sources report spam numbers")
+        }
 
-            //property variant currentItem
-
-            delegate:
-                BackgroundItem {
-                    id: delegate
-
-                    Label {
-                        anchors.left: parent.left
-                        anchors.leftMargin: Theme.paddingLarge
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: model.name
-                        color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
-                    }
-
-                    onClicked: {
-                        _bots.setBlockSource(model.id, true);
-                        _blocks.initBlocks();
-                        pageStack.pop();
-                    }
-                }
+        delegate: ListItem {
+            id: sourceItem
+            onClicked: {
+                _bots.setBlockSource(model.id, true)
+                _blocks.initBlocks()
+                pageStack.pop()
             }
 
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                anchors.verticalCenter: parent.verticalCenter
+                text: model.name
+                truncationMode: TruncationMode.Fade
+                color: sourceItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+            }
+        }
 
+        VerticalScrollDecorator {}
     }
-
-
-
 }

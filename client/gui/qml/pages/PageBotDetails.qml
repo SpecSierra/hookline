@@ -1,7 +1,6 @@
 import QtQuick 2.5
 import Sailfish.Silica 1.0
 import "../setting"
-import Nemo.DBus 2.0
 
 Page {
     id: root
@@ -9,184 +8,121 @@ Page {
     property int botId: 0
     property variant botModel: null
 
+    Component.onCompleted: {
+        botModel = _bots.getBotDetails(botId)
+        _bots.setActiveBot(botId)
+        params.model = _bots.paramList
+    }
+
+    RemorsePopup {
+        id: removeRemorse
+    }
+
     SilicaFlickable {
         anchors.fill: parent
-
-        contentHeight: contentColumn.height + header.height + 40
-
-        PageHeader {
-            title: botModel.name
-            id: header
-        }
-
+        contentHeight: contentColumn.height + Theme.paddingLarge
 
         PullDownMenu {
-
             MenuItem {
-                text: qsTr("Report a Problem")
-                onClicked: {
-                    Qt.openUrlExternally("https://github.com/omnight/phonehook/issues")
-                }
+                text: qsTr("Report a problem")
+                onClicked: Qt.openUrlExternally("https://github.com/SpecSierra/phonehook/issues")
             }
-
-            MenuItem {
-                text: qsTr("Clear Cache")
-                onClicked: {
-                    onClicked: _bots.clearCache(botId)
-                }
-            }
-
-            MenuItem {
-                text: qsTr("Test Number")
-                onClicked: {
-                    pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: botModel.name, botId: botModel.id })
-                }
-            }
-
             MenuItem {
                 text: qsTr("Remove")
-                onClicked: {
-                    pageStack.find(function(p) {
-                        if(p.remorseDelete) {
-                            p.remorseDelete();
-                        }
-                    })
-                    pageStack.pop();
-                }
+                onClicked: removeRemorse.execute(qsTr("Removing %1").arg(botModel.name), function() {
+                    _bots.removeBot(botId)
+                    pageStack.pop()
+                })
             }
-
-        }
-
-        Component.onCompleted: {
-
-            console.log('CREATING DETAILS PAGE')
-
-            //console.log('model', botModel);
-            botModel = _bots.getBotDetails(botId);
-            _bots.setActiveBot(botId);
-            params.model = _bots.paramList;
-            //enabledSwitch.checked = (botModel.enabled === 1);
+            MenuItem {
+                text: qsTr("Clear cache")
+                onClicked: _bots.clearCache(botId)
+            }
+            MenuItem {
+                text: qsTr("Test a number")
+                onClicked: pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: botModel.name, botId: botModel.id })
+            }
         }
 
         Column {
             id: contentColumn
-            anchors.top: header.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            spacing: 10
-            anchors.margins: Theme.paddingLarge
+            width: parent.width
 
-            Label {
-                font.pixelSize: Theme.fontSizeExtraSmall
-                anchors.right: parent.right
-                text: "Rev. " + botModel.revision
+            PageHeader {
+                title: botModel ? botModel.name : ""
+                description: botModel ? qsTr("Revision %1").arg(botModel.revision) : ""
             }
 
-            Label {
-                width: parent.width
-                text: qsTr("Bot Settings")
-                font.weight: Font.Bold
-                font.pixelSize: Theme.fontSizeMedium
-                color: Theme.primaryColor
+            SectionHeader {
+                text: qsTr("Settings")
+                visible: params.count > 0 || autoBlock.visible
             }
 
-            Label {
-                text: qsTr("None")
-                visible: params.model.count === 0 && !_bots.hasBlockTag(botId)
-            }
-
-            ListView {
+            Repeater {
                 id: params
-                width: parent.width
-                interactive: false
-                height: contentHeight
 
                 delegate: Loader {
                     id: cpLoader
-                    width: parent.width
+                    width: contentColumn.width
+
                     Component.onCompleted: {
-                        if(model.type === "string") source = "../setting/SettingString.qml";
-                        if(model.type === "password") source = "../setting/SettingPassword.qml";
-                        if(model.type === "bool") source = "../setting/SettingBool.qml";
+                        if (model.type === "string") source = "../setting/SettingString.qml"
+                        if (model.type === "password") source = "../setting/SettingPassword.qml"
+                        if (model.type === "bool") source = "../setting/SettingBool.qml"
                     }
 
                     Connections {
                         ignoreUnknownSignals: true
                         target: cpLoader.item
-
-                        onValueChanged: {
-                            _bots.setBotParam(model.bot_id,model.key, value);
-                        }
+                        onValueChanged: _bots.setBotParam(model.bot_id, model.key, value)
                     }
                 }
             }
 
-
-            SettingBool {
+            TextSwitch {
+                id: autoBlock
                 visible: _bots.hasBlockTag(botId)
-                text: qsTr('Enable Auto-blocking')
+                text: qsTr("Block reported spam")
+                description: qsTr("Reject numbers this source reports as spam")
                 checked: _bots.isBlockSource(botId)
                 onCheckedChanged: {
                     _bots.setBlockSource(botId, checked)
-					_blocks.initBlocks()
+                    _blocks.initBlocks()
                 }
             }
 
-            Item {
-                height: 20
-                width: parent.width
+            SectionHeader {
+                text: qsTr("About")
             }
-
 
             Label {
-                width: parent.width
-                text: qsTr("Description")
-                font.weight: Font.Bold
-                font.pixelSize: Theme.fontSizeMedium
-                color: Theme.primaryColor
-            }
-
-
-            Text {
-                width: parent.width
-                color: Theme.secondaryColor
-                text: botModel.description
-                wrapMode: Text.Wrap
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                text: botModel ? botModel.description : ""
                 font.pixelSize: Theme.fontSizeSmall
-            }
-
-            Item {
-                height: 20
-                width: parent.width
-            }
-
-
-            Label {
-                width: parent.width
-                text: qsTr("Link")
-                visible: botModel.link !== ""
-                font.weight: Font.Bold
-                font.pixelSize: Theme.fontSizeMedium
-                color: Theme.primaryColor
-            }
-
-
-            Text {
-                width: parent.width
-                color: Theme.secondaryColor
-                text: botModel.link
-                visible: botModel.link !== ""
+                color: Theme.highlightColor
                 wrapMode: Text.Wrap
-                font.pixelSize: Theme.fontSizeSmall
-                font.underline: true
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        Qt.openUrlExternally(botModel.link);
-                    }
+            }
+
+            BackgroundItem {
+                visible: botModel && botModel.link !== ""
+                height: linkLabel.height + 2 * Theme.paddingMedium
+                onClicked: Qt.openUrlExternally(botModel.link)
+
+                Label {
+                    id: linkLabel
+                    x: Theme.horizontalPageMargin
+                    width: parent.width - 2 * x
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: botModel ? botModel.link : ""
+                    font.pixelSize: Theme.fontSizeSmall
+                    font.underline: true
+                    color: parent.highlighted ? Theme.highlightColor : Theme.secondaryHighlightColor
+                    wrapMode: Text.WrapAnywhere
                 }
             }
-
         }
+
+        VerticalScrollDecorator {}
     }
 }

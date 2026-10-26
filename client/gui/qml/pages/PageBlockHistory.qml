@@ -1,87 +1,64 @@
 import QtQuick 2.5
 import Sailfish.Silica 1.0
 
+// Calls blocked by one rule
 Page {
     id: root
-    property variant contextItem
 
-    Label {
-        text: qsTr("No events")
-        anchors.horizontalCenter: root.horizontalCenter
-        anchors.verticalCenter: root.verticalCenter
-        font.pixelSize: Theme.fontSizeLarge
-        visible: historyView.model.count === 0
-    }
+    property string title
 
-    SilicaFlickable {
+    SilicaListView {
+        id: historyView
         anchors.fill: parent
-        contentHeight: historyView.height+header.height+50
+        model: _blocks.history
 
-        PageHeader {
-            id: header
-            title: qsTr("History")
+        header: PageHeader {
+            title: root.title
+            description: qsTr("Blocked calls")
         }
 
-        SilicaListView {
-            id: historyView
-            model: _blocks.history
-            anchors.top: header.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: contentHeight || 0
-            interactive: false
-            property Item contextMenu
+        ViewPlaceholder {
+            enabled: historyView.count === 0
+            text: qsTr("No blocked calls yet")
+        }
 
-            delegate:
-                BackgroundItem {
-                    id: delegate
-                    property string number: model.number
-                    property bool menuOpen: historyView.contextMenu != null && historyView.contextMenu.parent === delegate
-                    height: menuOpen ? historyView.contextMenu.height + contentItem.height : contentItem.height
+        delegate: ListItem {
+            id: historyItem
+            contentHeight: Theme.itemSizeMedium
 
-                    Column {
-                        id: contentItem
-                        anchors.left: parent.left
-                        anchors.leftMargin: Theme.paddingMedium
-                        anchors.right: parent.right
-                        anchors.rightMargin: Theme.paddingMedium
-                        Label {
-                            text: model.number
-                            color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
-                        }
-                        Label {
-                            text: new Date(model.date).toLocaleString(null, Locale.ShortFormat)
-                            color: delegate.highlighted ? Theme.highlightColor : Theme.secondaryColor
-                            font.pixelSize: Theme.fontSizeSmall
-                        }
-                    }
-
-                    onClicked: {
-                        contextItem = delegate
-                        if (!historyView.contextMenu)
-                            historyView.contextMenu = contextMenuComponent.createObject(historyView)
-                        historyView.contextMenu.show(delegate)
-                    }
-
+            menu: ContextMenu {
+                MenuItem {
+                    text: qsTr("Look up")
+                    visible: model.number.length > 4
+                    onClicked: _bots.testBot(0, model.number)
                 }
-
-
-                Component {
-                    id: contextMenuComponent
-                    ContextMenu {
-                        MenuItem {
-                            text: qsTr("Lookup");
-                            enabled: contextItem.number.length > 4
-                            onClicked: {
-                                _bots.testBot(0, contextItem.number);
-                            }
-                        }
-                    }
+                MenuItem {
+                    text: qsTr("Copy number")
+                    visible: model.number.length > 0
+                    onClicked: Clipboard.text = model.number
                 }
-
             }
+
+            Column {
+                anchors {
+                    left: parent.left; leftMargin: Theme.horizontalPageMargin
+                    right: parent.right; rightMargin: Theme.horizontalPageMargin
+                    verticalCenter: parent.verticalCenter
+                }
+                Label {
+                    width: parent.width
+                    text: model.number || qsTr("Hidden number")
+                    color: historyItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                }
+                Label {
+                    width: parent.width
+                    text: new Date(model.date).toLocaleString(Qt.locale(), Locale.ShortFormat)
+                    font.pixelSize: Theme.fontSizeExtraSmall
+                    color: historyItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                }
+            }
+        }
+
+        VerticalScrollDecorator {}
     }
-
-
-
 }

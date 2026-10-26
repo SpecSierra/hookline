@@ -2,156 +2,108 @@ import QtQuick 2.5
 import Sailfish.Silica 1.0
 
 Dialog {
+    id: root
 
     property variant botData
-    id: rewt
+
+    // 0 not installed, 1 up to date, 2 update available, 3 needs a newer phonehook
+    property int status: {
+        if (botData.minversion && botData.minversion > _bots.version())
+            return 3
+        return _bots.botStatusCompare(botData.name, botData.revision)
+    }
+
+    canAccept: status !== 3
 
     onAccepted: {
         pageStack.replace(Qt.resolvedUrl("PageDownloadWait.qml"))
         _bots.downloadBot(botData.file, true)
     }
 
-    DialogHeader {
-        id: header
-        acceptText: qsTr("Activate")
-    }
-
-    function niceNameCapability(s) {
-        switch(s) {
-            case 'lookup': return qsTr('Reverse caller lookup');
-            case 'person_search': return qsTr('Search for people');
-            case 'business_search': return qsTr('Search for businesses');
-            case 'block': return qsTr('Auto-blocking');
+    function capabilityName(s) {
+        switch (s) {
+        case 'lookup': return qsTr('Reverse caller lookup')
+        case 'person_search': return qsTr('Search for people')
+        case 'business_search': return qsTr('Search for businesses')
+        case 'block': return qsTr('Reports spam numbers')
         }
-
-        return s;   // non-nice name
+        return s
     }
 
     SilicaFlickable {
         anchors.fill: parent
-        anchors.topMargin: header.height
-        anchors.margins: Theme.paddingLarge
-        clip: true
+        contentHeight: column.height + Theme.paddingLarge
 
-       contentHeight: concol.height
+        Column {
+            id: column
+            width: parent.width
 
-       Column {
-           id: concol
-           width: parent.width
-
-            Image {
-                width: Screen.width / 2
-                height: (sourceSize.height / sourceSize.width) * width
-                source: botData.icon
-                anchors.horizontalCenter: parent.horizontalCenter
+            DialogHeader {
+                acceptText: status === 1 ? qsTr("Reinstall")
+                          : status === 2 ? qsTr("Update")
+                          : status === 3 ? "" : qsTr("Install")
+                title: botData.name
             }
 
             Label {
-                text: botData.name
-                font.pixelSize: Theme.fontSizeLarge
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-
-
-            Item {
-                height: 20
-                width: parent.width
-            }
-
-            Label {
-                text: qsTr("Status")
-            }
-
-            Text {
-                color: Theme.secondaryColor
-                font.pixelSize: Theme.fontSizeSmall
-                Component.onCompleted: {
-
-                    var status = _bots.botStatusCompare(botData.name, botData.revision)
-
-                    //console.log('minv', botData.minversion, _bots.version());
-
-                    if(botData.minversion && botData.minversion > _bots.version()) status = 3;
-
-                    if(status === 0) { text = qsTr("Not activated"); }
-                    if(status === 1) { text = qsTr("Active and up-to-date"); header.acceptText = qsTr("Reset"); color = "#DDFFDD" }
-                    if(status === 2) { text = qsTr("Update available"); header.acceptText = qsTr("Update"); color = "#FFFFDD" }
-                    if(status === 3) { text = qsTr("A newer version of phonehook is required"); header.enabled = false; canAccept = false; header.acceptText = ""; }
-                }
-            }
-
-            Item {
-                height: 20
-                width: parent.width
-                visible: botData.link !== ""
-            }
-
-            Label {
-                text: qsTr("Link")
-                visible: botData.link !== ""
-            }
-
-            Text {
-                width: parent.width
-                color: Theme.secondaryColor
-                text: botData.link
-                visible: botData.link !== ""
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                text: status === 1 ? qsTr("Installed and up to date")
+                    : status === 2 ? qsTr("Update available")
+                    : status === 3 ? qsTr("Needs a newer version of phonehook")
+                                   : qsTr("Not installed")
+                color: status === 3 ? Theme.errorColor : Theme.highlightColor
                 wrapMode: Text.Wrap
-                font.pixelSize: Theme.fontSizeSmall
-                font.underline: true
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        Qt.openUrlExternally(botData.link);
-                    }
-                }
             }
 
-            Item {
-                visible: botData.tags.count > 0
-                height: 20
-                width: parent.width
-            }
-
-            Label {
+            SectionHeader {
                 text: qsTr("Capabilities")
                 visible: botData.tags.count > 0
             }
 
-            ListView {
-                height: contentHeight
-                interactive: false
-                width: parent.width
+            Repeater {
                 model: botData.tags
-                delegate: Text {
+                Label {
+                    x: Theme.horizontalPageMargin
+                    width: column.width - 2 * x
+                    text: "• " + capabilityName(model.cap)
                     font.pixelSize: Theme.fontSizeSmall
-                    color: Theme.secondaryColor
-                    text: '  • ' + niceNameCapability(model.cap)
-                    width: parent.width
+                    color: Theme.highlightColor
                 }
             }
 
-            Item {
-                height: 20
-                width: parent.width
+            SectionHeader {
+                text: qsTr("About")
             }
 
             Label {
-                text: qsTr("Description")
-            }
-
-            Text {
-                width: parent.width
-                color: Theme.secondaryColor
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
                 text: botData.description
-                wrapMode: Text.Wrap
                 font.pixelSize: Theme.fontSizeSmall
+                color: Theme.highlightColor
+                wrapMode: Text.Wrap
             }
 
+            BackgroundItem {
+                visible: botData.link !== ""
+                height: linkLabel.height + 2 * Theme.paddingMedium
+                onClicked: Qt.openUrlExternally(botData.link)
 
+                Label {
+                    id: linkLabel
+                    x: Theme.horizontalPageMargin
+                    width: parent.width - 2 * x
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: botData.link
+                    font.pixelSize: Theme.fontSizeSmall
+                    font.underline: true
+                    color: parent.highlighted ? Theme.highlightColor : Theme.secondaryHighlightColor
+                    wrapMode: Text.WrapAnywhere
+                }
+            }
         }
 
+        VerticalScrollDecorator {}
     }
-
-
 }
