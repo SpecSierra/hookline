@@ -56,7 +56,9 @@ void spam_lists::check() {
     qint64 untilNext = lastUpdate.isValid()
             ? QDateTime::currentDateTimeUtc().msecsTo(lastUpdate.addDays(1)) : 0;
 
-    if (untilNext > 0 && QFile::exists(m_cachePath))
+    // Lists downloaded before the entry count was recorded are refreshed
+    bool complete = QFile::exists(m_cachePath) && setting::get("spam_lists_count", "") != "";
+    if (untilNext > 0 && complete)
         m_timer.start(untilNext);
     else
         download();
