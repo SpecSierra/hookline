@@ -1,9 +1,32 @@
 import QtQuick 2.5
 import Sailfish.Silica 1.0
+import "SourceStatus.js" as SourceStatus
 
 // Where caller information and block lists come from
 Page {
     id: root
+
+    // Source name -> { status, status_note } from the source index
+    property var sourceStatus: ({})
+
+    Component.onCompleted: {
+        var xhr = new XMLHttpRequest()
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== XMLHttpRequest.DONE)
+                return
+            try {
+                var statuses = {}
+                var sources = JSON.parse(xhr.responseText)
+                for (var i = 0; i < sources.length; i++)
+                    statuses[sources[i].name] = { status: sources[i].status, note: sources[i].status_note }
+                sourceStatus = statuses
+            } catch (e) {
+                console.log("source index:", e)
+            }
+        }
+        xhr.open("GET", _setting.get("sources_index_url", "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/master/files/index.js"))
+        xhr.send()
+    }
 
     function listsSummary() {
         var count = parseInt(_setting.get("spam_lists_count", "0"))
@@ -122,10 +145,16 @@ Page {
                             color: sourceItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                         }
                         Label {
+                            property var known: sourceStatus[model.name] || {}
                             width: parent.width
-                            text: qsTr("Revision %1").arg(model.revision)
+                            text: {
+                                var works = SourceStatus.text(known.status, known.note)
+                                return qsTr("Revision %1").arg(model.revision) + (works !== "" ? " · " + works : "")
+                            }
+                            truncationMode: TruncationMode.Fade
                             font.pixelSize: Theme.fontSizeExtraSmall
-                            color: sourceItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                            color: SourceStatus.isProblem(known.status) ? Theme.errorColor
+                                 : sourceItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                         }
                     }
                 }

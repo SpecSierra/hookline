@@ -68,9 +68,9 @@ Page {
                 checked: _setting.get("download_root_url", "") !== ""
                 onCheckedChanged: {
                     if (checked) {
-                        _setting.put("download_root_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/beta/files/")
-                        _setting.put("auto_update_index_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/beta/files/i.js")
-                        _setting.put("sources_index_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/beta/files/index.js")
+                        _setting.put("download_root_url", "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/beta/files/")
+                        _setting.put("auto_update_index_url", "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/beta/files/i.js")
+                        _setting.put("sources_index_url", "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/beta/files/index.js")
                     } else {
                         // use default values
                         _setting.remove("download_root_url")

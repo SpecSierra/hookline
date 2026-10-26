@@ -58,7 +58,8 @@ OTHER_FILES += qml/phonehook.qml \
     qml/pages/PageSources.qml \
     qml/pages/StartItem.qml \
     qml/pages/PageAbout.qml \
-    qml/pages/AboutLink.qml
+    qml/pages/AboutLink.qml \
+    qml/pages/SourceStatus.js
 
 # to disable building translations every time, comment out the
 # following CONFIG line

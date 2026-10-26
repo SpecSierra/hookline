@@ -65,7 +65,7 @@ void auto_update::checkForUpdates() {
     qDebug() << "starting source update!";
 
     QNetworkRequest req;
-    QString autoUpdateIndexUrl = setting::get("auto_update_index_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/master/files/i.js");
+    QString autoUpdateIndexUrl = setting::get("auto_update_index_url", "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/master/files/i.js");
 
     req.setUrl(QUrl(autoUpdateIndexUrl));
 

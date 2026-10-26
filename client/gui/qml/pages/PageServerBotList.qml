@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import Sailfish.Silica 1.0
+import "SourceStatus.js" as SourceStatus
 
 // Lookup sources that can be installed, grouped by country (own country first)
 Page {
@@ -8,11 +9,16 @@ Page {
     property bool loading: true
     property bool failed: false
 
-    // 0 not installed, 1 installed, 2 update available
-    function statusText(name, revision) {
-        var status = _bots.botStatusCompare(name, revision)
-        return status === 2 ? qsTr("Update available")
-             : status === 1 ? qsTr("Installed") : ""
+    // Installation state (0 not installed, 1 installed, 2 update available)
+    // and how well the source works
+    function statusText(source) {
+        var installed = _bots.botStatusCompare(source.name, source.revision)
+        var parts = []
+        if (installed === 2) parts.push(qsTr("Update available"))
+        if (installed === 1) parts.push(qsTr("Installed"))
+        var works = SourceStatus.text(source.status, source.status_note)
+        if (works !== "") parts.push(works)
+        return parts.join(" · ")
     }
 
     Component.onCompleted: {
@@ -42,12 +48,15 @@ Page {
                 for (var t = 0; t < sources[i].tags.length; t++)
                     tags.push({ "cap": sources[i].tags[t] })
                 sources[i].tags = tags
+                // ListModel takes its roles from the first entry: always set them
+                sources[i].status = sources[i].status || ""
+                sources[i].status_note = sources[i].status_note || ""
                 sources[i].countryName = sources[i].country === "_ALL"
                         ? qsTr("All countries") : _bots.getCountryName(sources[i].country)
                 serverBots.append(sources[i])
             }
         }
-        xhr.open("GET", _setting.get("sources_index_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/master/files/index.js"))
+        xhr.open("GET", _setting.get("sources_index_url", "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/master/files/index.js"))
         xhr.send()
     }
 
@@ -100,15 +109,17 @@ Page {
                 Label {
                     id: statusLabel
                     width: parent.width
-                    text: statusText(model.name, model.revision)
+                    text: statusText(model)
                     visible: text !== ""
                     font.pixelSize: Theme.fontSizeExtraSmall
-                    color: sourceItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                    truncationMode: TruncationMode.Fade
+                    color: SourceStatus.isProblem(model.status) ? Theme.errorColor
+                         : sourceItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
 
                     Connections {
                         target: _bots.botList
                         ignoreUnknownSignals: true
-                        onCount_changed: statusLabel.text = statusText(model.name, model.revision)
+                        onCount_changed: statusLabel.text = statusText(model)
                     }
                 }
             }

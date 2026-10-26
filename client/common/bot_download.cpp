@@ -21,7 +21,7 @@ bot_download::bot_download(QObject *parent) :
 
 void bot_download::download(QString file, bool KeepData) {
     QNetworkRequest req;
-    QString downloadUrlRoot = setting::get("download_root_url", "https://raw.githubusercontent.com/omnight/phonehook-sources/master/files/");
+    QString downloadUrlRoot = setting::get("download_root_url", "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/master/files/");
 
     req.setUrl(QUrl(downloadUrlRoot + file));
     req.setRawHeader("KeepData", KeepData ? "true" : "false");
