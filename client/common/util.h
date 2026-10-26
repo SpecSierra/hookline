@@ -15,6 +15,7 @@ public:
     explicit util(QObject *parent = 0);
 
     static QVariant queryToArray(QString query, QVariantMap params, QSqlDatabase *db = NULL);
+    static QSqlDatabase openContactsDb(QString connectionName);
 
 signals:
 

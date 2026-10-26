@@ -1,3 +1,5 @@
+#include <QDir>
+#include <QFile>
 #include <QSqlRecord>
 
 #include "util.h"
@@ -44,4 +46,18 @@ QVariant util::queryToArray(QString query, QVariantMap params, QSqlDatabase *db)
 
     delete q;
     return results;
+}
+
+// Read-only connection to the system contacts. Sailfish OS 3+ keeps them in
+// the user's privileged data directory (the binaries are setgid privileged).
+QSqlDatabase util::openContactsDb(QString connectionName) {
+    QString dir = QDir::homePath() + "/.local/share/system/privileged/Contacts/qtcontacts-sqlite/";
+    if (!QFile::exists(dir + "contacts.db"))
+        dir = QDir::homePath() + "/.local/share/system/Contacts/qtcontacts-sqlite/";
+
+    QSqlDatabase contactsDb = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+    contactsDb.setDatabaseName(dir + "contacts.db");
+    contactsDb.setConnectOptions("QSQLITE_OPEN_READONLY");
+    contactsDb.open();
+    return contactsDb;
 }

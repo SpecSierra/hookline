@@ -1,16 +1,14 @@
 #include <QSqlError>
 
 #include "blocks.h"
+#include "util.h"
 
 blocks::blocks(QObject *parent) :
     QObject(parent),contacts_db{}
 {
 
 
-    contacts_db = QSqlDatabase::addDatabase("QSQLITE", "contacts");
-    contacts_db.setDatabaseName("/home/nemo/.local/share/system/Contacts/qtcontacts-sqlite/contacts.db");
-
-    contacts_db.open();
+    contacts_db = util::openContactsDb("contacts");
 
     //initContacts();
 

@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
-X-Nemo-Application-Type=silica-qt5
+# Not booster-launched, so the setgid privileged group applies (contacts)
+X-Nemo-Application-Type=no-invoker
 Icon=phonehook
 Exec=phonehook
 Name=phonehook

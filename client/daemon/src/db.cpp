@@ -3,6 +3,7 @@
 #include <QDebug>
 
 #include "db.h"
+#include "util.h"
 
 SINGLETON_CPP(db)
 
@@ -19,10 +20,7 @@ db::db(QObject *parent) :
     m_db.setDatabaseName(dataDir + "/phonehook.db");
     m_db.open();
 
-    // nemo contacts db
-    m_db_contacts = QSqlDatabase::addDatabase("QSQLITE", "db_contacts");
-    m_db_contacts.setDatabaseName("/home/nemo/.local/share/system/Contacts/qtcontacts-sqlite/contacts.db");
-    m_db_contacts.open();
+    m_db_contacts = util::openContactsDb("db_contacts");
 
     initDbTables();
 	m_db.setConnectOptions("foreign_keys = ON");

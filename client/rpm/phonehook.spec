@@ -80,7 +80,9 @@ desktop-file-install --delete-original       \
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}
+# privileged group: read access to the system contacts
+%attr(2755,root,privileged) %{_bindir}/%{name}
+%attr(2755,root,privileged) %{_bindir}/%{name}-daemon
 %{_datadir}/%{name}
 %{_datadir}/%{name}-daemon
 %{_datadir}/applications/%{name}.desktop
