@@ -16,6 +16,7 @@
 #include "phonenumber.h"
 #include "overlay.h"
 #include "auto_update.h"
+#include "call_filter.h"
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -63,6 +64,8 @@ int main(int argc, char *argv[])
 
     QString dataDir = QDir::home().absolutePath() + "/.phonehook";
     QDir::home().mkpath(dataDir);
+
+    call_filter filter(dataDir + "/phonehook.db");
 
     qDebug() << "create listener";
     dbus listener(app);

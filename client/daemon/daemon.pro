@@ -30,6 +30,7 @@ SOURCES += src/ph-daemon.cpp \
     src/compression.cpp \
     src/overlay.cpp \
     src/blocking.cpp \
+    src/call_filter.cpp \
     src/auto_update.cpp \    
     ../common/bot_download.cpp \
     ../common/util.cpp \
@@ -41,6 +42,7 @@ service.path = /usr/lib/systemd/user
 
 INSTALLS = service
 LIBS += -lz
+PKGCONFIG += mlite5
 
 # to disable building translations every time, comment out the
 # following CONFIG line
@@ -55,6 +57,7 @@ TRANSLATIONS += translations/phonehook-daemon-es.ts \
 INCLUDEPATH += ../common
 
 HEADERS += \
+    src/call_filter.h \
     src/robot_base.h \
     src/process_data.h \
     src/lookup_thread.h \
