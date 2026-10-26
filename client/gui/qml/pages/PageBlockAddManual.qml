@@ -59,7 +59,7 @@ Dialog {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * x
                 visible: !blockHidden.checked
-                text: qsTr("Local or international format. End with * to block every number starting with it, for example 0899*.")
+                text: qsTr("Local or international format. End with * to block every number starting with it.")
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor
                 wrapMode: Text.Wrap

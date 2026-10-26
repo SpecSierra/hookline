@@ -8,7 +8,7 @@ Call blocking for **Sailfish OS 5**: unwanted calls are rejected before the phon
 
 ## Blocks
 
-- Numbers, prefixes (`0899*`), hidden numbers and contacts you choose
+- Numbers, number ranges (`prefix*`), hidden numbers and contacts you choose
 - Daily block lists, on by default for your country:
 
 | Country | Blocks | Source |
