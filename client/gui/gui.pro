@@ -56,7 +56,9 @@ OTHER_FILES += qml/phonehook.qml \
     qml/pages/PageBlockAddManual.qml \
     qml/pages/PageBlockAddSource.qml \
     qml/pages/PageSources.qml \
-    qml/pages/StartItem.qml
+    qml/pages/StartItem.qml \
+    qml/pages/PageAbout.qml \
+    qml/pages/AboutLink.qml
 
 # to disable building translations every time, comment out the
 # following CONFIG line
