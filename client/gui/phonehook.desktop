@@ -9,3 +9,7 @@ Name=phonehook
 # your app name in German locale (de)
 Name[de]=phonehook
 
+
+# The GUI shares ~/.phonehook and D-Bus with the daemon and reads contacts
+[X-Sailjail]
+Sandboxing=Disabled
