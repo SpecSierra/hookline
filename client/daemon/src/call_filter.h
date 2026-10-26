@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QTimer>
 
+class block_lists;
+
 // Keeps the reject list of the Sailfish OS 5 call filter (voicecall filter
 // plugin) in sync with the block rules, so blocked calls are rejected before
 // they ring. Rules the filter cannot express (a "*" that is not at the end)
@@ -14,7 +16,7 @@ class call_filter : public QObject
     Q_OBJECT
 
 public:
-    call_filter(QString dbPath, QString spamListsPath, QObject *parent = 0);
+    call_filter(QString dbPath, block_lists *lists, QObject *parent = 0);
 
 public slots:
     void sync();
@@ -22,7 +24,7 @@ public slots:
 private:
     QStringList rejectedNumbers();
 
-    QString m_spamListsPath;
+    block_lists *m_lists;
     QFileSystemWatcher m_watcher;
     QTimer m_delay;
 };

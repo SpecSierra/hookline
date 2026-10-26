@@ -1,6 +1,7 @@
 import QtQuick 2.5
 import Sailfish.Silica 1.0
 import "SourceStatus.js" as SourceStatus
+import "BlockLists.js" as BlockLists
 
 // Where caller information and block lists come from
 Page {
@@ -28,15 +29,6 @@ Page {
         xhr.send()
     }
 
-    function listsSummary() {
-        var count = parseInt(_setting.get("spam_lists_count", "0"))
-        var updated = _setting.get("spam_lists_updated", "")
-        if (updated === "")
-            return qsTr("Not downloaded yet")
-        var date = new Date(updated).toLocaleString(Qt.locale(), Locale.ShortFormat)
-        return qsTr("%n entries", "", count) + " · " + qsTr("updated %1").arg(date)
-    }
-
     SilicaFlickable {
         anchors.fill: parent
         contentHeight: column.height + Theme.paddingLarge
@@ -61,36 +53,55 @@ Page {
                 text: qsTr("Block lists")
             }
 
-            TextSwitch {
-                text: qsTr("French spam calls")
-                description: qsTr("Telemarketing prefixes (ARCEP) and the most reported numbers, rejected before the phone rings. Updated daily.")
-                checked: _setting.get("spam_lists", "true") === "true"
-                onCheckedChanged: _setting.put("spam_lists", checked)
-            }
-
             Label {
-                x: Theme.horizontalPageMargin + Theme.itemSizeExtraSmall
-                width: parent.width - x - Theme.horizontalPageMargin
-                text: listsSummary()
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                visible: listRepeater.count === 0
+                text: qsTr("The list of block lists is downloaded by the service.")
+                color: Theme.secondaryHighlightColor
                 wrapMode: Text.Wrap
             }
 
-            BackgroundItem {
-                height: attribution.height + 2 * Theme.paddingSmall
-                onClicked: Qt.openUrlExternally("https://saracroche.org")
+            Repeater {
+                id: listRepeater
+                model: BlockLists.index(_setting)
 
-                Label {
-                    id: attribution
-                    x: Theme.horizontalPageMargin + Theme.itemSizeExtraSmall
-                    width: parent.width - x - Theme.horizontalPageMargin
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: qsTr("Lists by Saracroche (saracroche.org), CC BY-NC-SA 4.0")
-                    font.pixelSize: Theme.fontSizeExtraSmall
-                    font.underline: true
-                    color: parent.highlighted ? Theme.highlightColor : Theme.secondaryColor
-                    wrapMode: Text.Wrap
+                Column {
+                    width: column.width
+
+                    TextSwitch {
+                        text: modelData.name
+                        description: modelData.description
+                        checked: BlockLists.isEnabled(_setting, modelData)
+                        onCheckedChanged: _setting.put("block_list_" + modelData.id, checked)
+                    }
+
+                    Label {
+                        x: Theme.horizontalPageMargin + Theme.itemSizeExtraSmall
+                        width: parent.width - x - Theme.horizontalPageMargin
+                        text: BlockLists.summary(_setting, modelData)
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        color: Theme.secondaryColor
+                        wrapMode: Text.Wrap
+                    }
+
+                    BackgroundItem {
+                        visible: modelData.attribution !== undefined
+                        height: attribution.height + 2 * Theme.paddingSmall
+                        onClicked: Qt.openUrlExternally(modelData.attribution_url)
+
+                        Label {
+                            id: attribution
+                            x: Theme.horizontalPageMargin + Theme.itemSizeExtraSmall
+                            width: parent.width - x - Theme.horizontalPageMargin
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qsTr("Source: %1, %2").arg(modelData.attribution).arg(modelData.license)
+                            font.pixelSize: Theme.fontSizeExtraSmall
+                            font.underline: true
+                            color: parent.highlighted ? Theme.highlightColor : Theme.secondaryColor
+                            wrapMode: Text.Wrap
+                        }
+                    }
                 }
             }
 

@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import Sailfish.Silica 1.0
+import "BlockLists.js" as BlockLists
 
 Page {
     id: topPage
@@ -88,9 +89,11 @@ Page {
                 title: qsTr("Data sources")
                 description: {
                     var lookups = _bots.daemonActive ? _bots.botList.count : 0
-                    var lists = _setting.get("spam_lists", "true") === "true"
+                    var lists = BlockLists.index(_setting).filter(function(list) {
+                        return BlockLists.isEnabled(_setting, list)
+                    }).length
                     return qsTr("%n lookup source(s)", "", lookups)
-                            + (lists ? " · " + qsTr("French spam lists") : "")
+                            + " · " + qsTr("%n block list(s)", "", lists)
                 }
                 page: "PageSources.qml"
             }

@@ -3,6 +3,7 @@
 #include <QFile>
 
 #include "dbus.h"
+#include "setting.h"
 #include "phonenumber.h"
 #include "blocking.h"
 #include "db.h"
@@ -155,6 +156,11 @@ void dbus::gotNetworkStatus(QDBusMessage reply) {
             qs.addBindValue("location");
             qs.addBindValue( phonenumber::mobilecc_to_iso32662(m_mobileCountryCode) );
             qs.exec();
+
+            // Home country (default block lists): the network country, except abroad
+            QString country = phonenumber::mobilecc_to_iso32662(m_mobileCountryCode);
+            if (!m_isRoaming && country != "" && country != setting::get("home_country", ""))
+                setting::put("home_country", country);
 
             a.endMapEntry();
         }

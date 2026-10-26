@@ -31,7 +31,7 @@ SOURCES += src/ph-daemon.cpp \
     src/overlay.cpp \
     src/blocking.cpp \
     src/call_filter.cpp \
-    src/spam_lists.cpp \
+    src/block_lists.cpp \
     src/auto_update.cpp \    
     ../common/bot_download.cpp \
     ../common/util.cpp \
@@ -59,7 +59,7 @@ INCLUDEPATH += ../common
 
 HEADERS += \
     src/call_filter.h \
-    src/spam_lists.h \
+    src/block_lists.h \
     src/robot_base.h \
     src/process_data.h \
     src/lookup_thread.h \
