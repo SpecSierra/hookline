@@ -12,7 +12,7 @@ static const char *INDEX_URL = "https://raw.githubusercontent.com/SpecSierra/pho
 
 static QNetworkRequest listRequest(QUrl url) {
     QNetworkRequest request(url);
-    request.setRawHeader("User-Agent", "Hookline (https://github.com/SpecSierra/phonehook)");
+    request.setRawHeader("User-Agent", "Hookline (https://github.com/SpecSierra/hookline)");
     return request;
 }
 

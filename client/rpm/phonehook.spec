@@ -17,7 +17,7 @@ Version:    1.0.0
 Release:    1
 Group:      Qt/Qt
 License:    GPLv3
-URL:        https://github.com/SpecSierra/phonehook
+URL:        https://github.com/SpecSierra/hookline
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  phonehook.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
@@ -32,7 +32,11 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  systemd
 
 %description
-See who's calling!
+Hookline rejects unwanted calls before the phone rings: numbers, number
+prefixes, hidden numbers and contacts you block, plus block lists updated
+daily (French telemarketing and spam numbers, and the telemarketing
+ranges reserved by the regulators of several countries). It uses the
+call filter of Sailfish OS 5. Based on Phonehook by Johan Ekman.
 
 %prep
 %setup -q -n %{name}-%{version}

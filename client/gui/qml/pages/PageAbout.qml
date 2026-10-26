@@ -45,7 +45,7 @@ Page {
 
             AboutLink {
                 text: qsTr("Hookline source code")
-                url: "https://github.com/SpecSierra/phonehook"
+                url: "https://github.com/SpecSierra/hookline"
             }
 
             SectionHeader {
