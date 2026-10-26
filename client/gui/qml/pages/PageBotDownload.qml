@@ -6,7 +6,7 @@ Dialog {
 
     property variant botData
 
-    // 0 not installed, 1 up to date, 2 update available, 3 needs a newer phonehook
+    // 0 not installed, 1 up to date, 2 update available, 3 needs a newer Hookline
     property int status: {
         if (botData.minversion && botData.minversion > _bots.version())
             return 3
@@ -50,7 +50,7 @@ Dialog {
                 width: parent.width - 2 * x
                 text: status === 1 ? qsTr("Installed and up to date")
                     : status === 2 ? qsTr("Update available")
-                    : status === 3 ? qsTr("Needs a newer version of phonehook")
+                    : status === 3 ? qsTr("Needs a newer version of Hookline")
                                    : qsTr("Not installed")
                 color: status === 3 ? Theme.errorColor : Theme.highlightColor
                 wrapMode: Text.Wrap

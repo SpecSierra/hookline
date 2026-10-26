@@ -19,7 +19,7 @@ Page {
             Label {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * x
-                text: qsTr("Phonehook looks up unknown callers and blocks unwanted calls.")
+                text: qsTr("Hookline looks up unknown callers and blocks unwanted calls before the phone rings.")
                 color: Theme.highlightColor
                 wrapMode: Text.Wrap
             }
@@ -32,20 +32,19 @@ Page {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * x
                 textFormat: Text.StyledText
-                text: qsTr("Created by <b>Johan Ekman (omnight)</b> in 2015.")
-                      + "<br>" + qsTr("Maintained from 2019 by <b>Armin Felder</b>.")
+                text: qsTr("Hookline is based on <b>Phonehook</b>, created by <b>Johan Ekman (omnight)</b> in 2015 and maintained from 2019 by <b>Armin Felder</b>.")
                       + "<br>" + qsTr("Thanks to every contributor and translator of the original project.")
                 color: Theme.highlightColor
                 wrapMode: Text.Wrap
             }
 
             AboutLink {
-                text: qsTr("Original project")
+                text: qsTr("Phonehook, the original project")
                 url: "https://github.com/omnight/phonehook"
             }
 
             AboutLink {
-                text: qsTr("This version: Sailfish OS 5 port")
+                text: qsTr("Hookline source code")
                 url: "https://github.com/SpecSierra/phonehook"
             }
 
@@ -56,7 +55,7 @@ Page {
             Label {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * x
-                text: qsTr("French spam lists by Saracroche, licensed CC BY-NC-SA 4.0. Lookup sources belong to their respective owners; phonehook is not endorsed by them.")
+                text: qsTr("French spam lists by Saracroche, licensed CC BY-NC-SA 4.0. Lookup sources belong to their respective owners; Hookline is not endorsed by them.")
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.highlightColor
                 wrapMode: Text.Wrap

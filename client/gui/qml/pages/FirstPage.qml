@@ -36,7 +36,7 @@ Page {
             width: parent.width
 
             PageHeader {
-                title: qsTr("Phonehook")
+                title: "Hookline"
                 description: qsTr("Caller lookup and call blocking")
             }
 

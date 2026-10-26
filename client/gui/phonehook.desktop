@@ -4,10 +4,10 @@ Type=Application
 X-Nemo-Application-Type=no-invoker
 Icon=phonehook
 Exec=phonehook
-Name=phonehook
+Name=Hookline
 # translation example:
 # your app name in German locale (de)
-Name[de]=phonehook
+Name[de]=Hookline
 
 
 # The GUI shares ~/.phonehook and D-Bus with the daemon and reads contacts

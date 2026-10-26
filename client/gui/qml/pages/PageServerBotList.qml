@@ -131,7 +131,7 @@ Page {
             height: implicitHeight + 2 * Theme.paddingLarge
             verticalAlignment: Text.AlignVCenter
             visible: serverBots.count > 0
-            text: qsTr("All names and logos listed here are properties of respective rights holders. Phonehook is not endorsed by any of these services.")
+            text: qsTr("All names and logos listed here are properties of respective rights holders. Hookline is not endorsed by any of these services.")
             font.pixelSize: Theme.fontSizeExtraSmall
             color: Theme.secondaryColor
             wrapMode: Text.Wrap
