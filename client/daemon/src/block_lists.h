@@ -9,7 +9,7 @@
 #include <QTimer>
 
 // Number lists that are rejected before the phone rings, described by an
-// index in phonehook-sources (blocklists/index.json): per list a name, a
+// index in hookline-sources (blocklists/index.json): per list a name, a
 // country, a licence and the files to download. Lists are downloaded daily;
 // by default the lists of the home country are enabled ("block_list_<id>").
 class block_lists : public QObject
