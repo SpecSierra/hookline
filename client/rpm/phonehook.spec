@@ -87,7 +87,7 @@ desktop-file-install --delete-original       \
 %{_datadir}/%{name}
 %{_datadir}/%{name}-daemon
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/86x86/apps/%{name}.png
+%{_datadir}/icons/hicolor/*/apps/%{name}.png
 /usr/lib/systemd/user/phonehook-daemon.service
 # >> files
 # << files

@@ -13,6 +13,7 @@
 TARGET = phonehook
 
 CONFIG += sailfishapp c++14
+SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
 QT += dbus xml sql xmlpatterns quick-private
 
 INCLUDEPATH += ../common

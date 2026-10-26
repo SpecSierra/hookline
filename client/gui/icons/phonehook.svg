@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Sailfish launcher shape: a circle with a square top right corner -->
+  <clipPath id="shape">
+    <path d="M128 0 H256 V128 A128 128 0 1 1 128 0 Z"/>
+  </clipPath>
+  <g clip-path="url(#shape)">
+    <!-- water, deeper at the bottom -->
+    <rect width="256" height="256" fill="#2a9ec7"/>
+    <path d="M0 150 C50 135 90 165 140 150 S220 135 256 148 V256 H0 Z" fill="#1f7fa8"/>
+
+    <!-- fishing line -->
+    <path d="M170 0 L170 26 L160 34 L178 44 L160 54 L178 64 L170 72 L170 84"
+          fill="none" stroke="#0e2c3b" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+
+    <!-- handset hanging on the line: earpiece, handle, mouthpiece -->
+    <g fill="#0e2c3b">
+      <rect x="150" y="84" width="48" height="28" rx="12"/>
+      <rect x="150" y="174" width="48" height="28" rx="12"/>
+    </g>
+    <path d="M164 98 C130 108 130 178 164 188" fill="none" stroke="#0e2c3b" stroke-width="28" stroke-linecap="round"/>
+
+    <!-- a curious fish swimming up to the bait -->
+    <g fill="#bfe9f5">
+      <ellipse cx="78" cy="132" rx="30" ry="17"/>
+      <path d="M50 132 L26 116 L30 132 L26 148 Z"/>
+    </g>
+    <circle cx="94" cy="127" r="4" fill="#0e2c3b"/>
+
+    <!-- a smaller one further down -->
+    <g fill="#8fd3ea">
+      <ellipse cx="86" cy="206" rx="18" ry="10"/>
+      <path d="M103 206 L118 197 L115 206 L118 215 Z"/>
+    </g>
+    <circle cx="77" cy="203" r="2.6" fill="#0e2c3b"/>
+  </g>
+</svg>
