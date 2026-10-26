@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QDir>
 #include <QProcess>
 #include <QSqlError>
 
@@ -77,8 +78,7 @@ void lookup_worker::threadStarted(QMap<QString,QString> parameters, QList<int> b
     }
 
     // delete previous vCard
-    if(QFile::exists("/home/nemo/.phonehook/phonehook.vcf"))
-        QFile::remove("/home/nemo/.phonehook/phonehook.vcf");
+    QFile::remove(QDir::homePath() + "/.phonehook/phonehook.vcf");
 
     vCardData.clear();
     vCardData["telnr"] = parameters["telnrInt"];

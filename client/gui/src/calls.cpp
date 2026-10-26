@@ -1,3 +1,5 @@
+#include <QDir>
+
 #include "calls.h"
 
 
@@ -5,7 +7,8 @@ calls::calls(QObject *parent) :
     QObject(parent)
 {
     comms_db = QSqlDatabase::addDatabase("QSQLITE", "calls");
-    comms_db.setDatabaseName("/home/nemo/.local/share/commhistory/commhistory.db");
+    comms_db.setDatabaseName(QDir::homePath() + "/.local/share/commhistory/commhistory.db");
+    comms_db.setConnectOptions("QSQLITE_OPEN_READONLY");
 
     comms_db.open();
 

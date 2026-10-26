@@ -401,7 +401,7 @@ void bots::copyCookies(int bot_id) {
 }
 
 void bots::vCardWrite(const QString &name, const QStringList &numbers,  QString address) {
-    QFile vCardFile("/home/nemo/.phonehook/phonehook.vcf");
+    QFile vCardFile(QDir::homePath() + "/.phonehook/phonehook.vcf");
     if(vCardFile.open(QIODevice::WriteOnly)) {
         QTextStream stream(&vCardFile);
         stream.setCodec("UTF-8");
