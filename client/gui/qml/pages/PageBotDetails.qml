@@ -65,7 +65,6 @@ Page {
             botModel = _bots.getBotDetails(botId);
             _bots.setActiveBot(botId);
             params.model = _bots.paramList;
-            logins.model = _bots.loginList;
             //enabledSwitch.checked = (botModel.enabled === 1);
         }
 
@@ -132,50 +131,6 @@ Page {
 					_blocks.initBlocks()
                 }
             }
-
-            Label {
-                width: parent.width
-                text: qsTr("Login")
-                font.weight: Font.Bold
-                font.pixelSize: Theme.fontSizeMedium
-                color: Theme.primaryColor
-                visible: logins.model.count > 0
-            }
-
-
-            ListView {
-                id: logins
-                width: parent.width
-                interactive: false
-                height: contentHeight
-
-                delegate: Item {
-                    width: parent.width
-                    height: 70
-                    Button {
-                        anchors.centerIn: parent
-                        text: model.name
-                        onClicked: {
-
-                            var login_data = JSON.stringify(model, function replacer(key, value) {
-                                if (["model", "objectName","hasModelChildren","index"].indexOf(key) != -1) {
-                                  return undefined;
-                                }
-                                return value;
-                          });
-
-                            console.log(login_data);
-
-                            pageStack.push(Qt.resolvedUrl("PageOAuth.qml"),
-                               {
-                                   'bot_id': botModel.id,
-                                   'login_data': model
-                               });
-                        }
-                    }
-                }
-            }
-
 
             Item {
                 height: 20

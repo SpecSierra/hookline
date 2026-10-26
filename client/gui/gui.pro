@@ -13,7 +13,7 @@
 TARGET = phonehook
 
 CONFIG += sailfishapp c++14
-QT += dbus xml sql xmlpatterns quick-private webkit-private
+QT += dbus xml sql xmlpatterns quick-private
 
 INCLUDEPATH += ../common
 
@@ -58,7 +58,6 @@ OTHER_FILES += qml/phonehook.qml \
     qml/pages/PageCallLogStart.qml \
     qml/pages/PageBlockAddManual.qml \
     qml/pages/PageBlockAddSource.qml \
-    qml/pages/PageOAuth.qml \
     qml/pages/ListPopup.qml \
     qml/pages/ItemSelector2.qml
 

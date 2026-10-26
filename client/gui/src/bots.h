@@ -21,7 +21,6 @@
 #include <QQuickView>
 #include <QQmlEngine>
 
-#include <private/qquickwebview_p.h>
 #include "bot_download.h"
 
 class OpenJar: public QNetworkCookieJar {
@@ -94,14 +93,6 @@ public:
     Q_INVOKABLE int cookieCount()
     {
         return jar.allCookies().length();
-    }
-
-    Q_INVOKABLE void setCookieManager(QQuickWebView *view) {
-        Q_UNUSED(view)
-        //view->experimental()->deleteAllCookies();
-        //qDebug() << view->experimental()->dynamicPropertyNames();
-        //view->experimental()->evaluateJavaScript();
-        //view->engine()->networkAccessManager()->setCookieJar(&jar);
     }
 
     Q_INVOKABLE void copyCookies(int bot_id);
