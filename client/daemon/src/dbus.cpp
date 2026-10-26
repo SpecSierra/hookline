@@ -197,11 +197,13 @@ void dbus::onIncomingCall(const QDBusMessage &a) {
 }
 
 // Calls the voicecall filter did not reject (hidden numbers, "*" in the
-// middle of a rule, older Sailfish OS) are hung up here
+// middle of a rule, older Sailfish OS) are hung up here; unknown callers can
+// also be checked with PhoneBlock
 void dbus::processNumber(QString callingNr) {
     phonenumber number(callingNr,
                        phonenumber::mobilecc_to_iso32662( dbus::Instance()->mobileCountryCode() ),
                        QString::number( dbus::Instance()->mobileNetworkCode() ));
 
-    blocking::Instance()->preCheckBlock(number);
+    if (!blocking::Instance()->preCheckBlock(number))
+        m_phoneblock.check(number);
 }

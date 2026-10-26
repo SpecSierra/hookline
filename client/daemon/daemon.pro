@@ -13,12 +13,14 @@ SOURCES += src/ph-daemon.cpp \
     src/blocking.cpp \
     src/call_filter.cpp \
     src/block_lists.cpp \
+    src/phoneblock_check.cpp \
     ../common/util.cpp \
     ../common/setting.cpp
 
 HEADERS += \
     src/call_filter.h \
     src/block_lists.h \
+    src/phoneblock_check.h \
     src/dbus_adapter.h \
     src/dbus.h \
     src/db.h \

@@ -72,6 +72,22 @@ Page {
                     }
                 }
             }
+
+            SectionHeader {
+                text: qsTr("Online check")
+            }
+
+            TextSwitch {
+                text: qsTr("Check unknown callers with PhoneBlock")
+                description: qsTr("The number of each incoming call that is not a contact is sent to phoneblock.net. Numbers its community reports as spam are hung up and added to your rules.")
+                checked: _setting.get("phoneblock_check", "false") === "true"
+                onCheckedChanged: _setting.put("phoneblock_check", checked)
+            }
+
+            AboutLink {
+                text: "phoneblock.net"
+                url: "https://phoneblock.net"
+            }
         }
 
         VerticalScrollDecorator {}

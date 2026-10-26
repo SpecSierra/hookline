@@ -4,6 +4,7 @@
 #include <QObject>
 #include "phonenumber.h"
 #include "dbus_adapter.h"
+#include "phoneblock_check.h"
 
 class dbus : public QObject
 {
@@ -23,6 +24,7 @@ public:
 private:
     QDBusInterface *interface;
     dbus_adapter *adapter;
+    phoneblock_check m_phoneblock;
     static dbus *m_instance;
     void updateNetwork();
 
