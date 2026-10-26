@@ -21,8 +21,15 @@ blocks::~blocks() {
 void blocks::initContacts() {
     qDebug() << "init contacts!";
 
-    m_contacts.setQuery("SELECT contactId, displayLabel FROM Contacts WHERE hasPhoneNumber=1 ORDER BY displayLabel",
-                       contacts_db);
+    // Names are in DisplayLabels; collection 1 holds the merged contacts,
+    // one per person whatever the address books they come from
+    m_contacts.setQuery(R"(
+        SELECT Contacts.contactId, DisplayLabels.displayLabel FROM Contacts
+        JOIN DisplayLabels ON DisplayLabels.contactId = Contacts.contactId
+        WHERE Contacts.collectionId = 1 AND Contacts.hasPhoneNumber = 1
+          AND Contacts.deleted IS NULL AND Contacts.isDeactivated = 0
+        ORDER BY DisplayLabels.displayLabel COLLATE NOCASE
+    )", contacts_db);
 
     qDebug() << m_contacts.count();
 
@@ -39,7 +46,7 @@ QString blocks::contactName(int contactId) {
 
     QSqlQuery sq(contacts_db);
 
-    sq.prepare("SELECT displayLabel FROM Contacts WHERE contactId=?");
+    sq.prepare("SELECT displayLabel FROM DisplayLabels WHERE contactId=?");
     sq.addBindValue(contactId);
 
     sq.exec();

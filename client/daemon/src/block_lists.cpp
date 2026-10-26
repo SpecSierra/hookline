@@ -21,7 +21,8 @@ block_lists::block_lists(QString cacheDir, QObject *parent) :
 {
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, &block_lists::check);
-    check();
+    // Refresh at start too, so new lists show up without waiting a day
+    download();
 }
 
 // Patterns are international numbers without "+", each trailing "#" is any
