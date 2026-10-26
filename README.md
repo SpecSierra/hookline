@@ -36,7 +36,7 @@ The package is still named `phonehook`: it upgrades Phonehook and keeps your blo
 
 ## Add a country
 
-- **Where:** one entry in [blocklists/index.json](https://github.com/SpecSierra/phonehook-sources/blob/master/blocklists/index.json).
+- **Where:** one entry in [blocklists/index.json](https://github.com/SpecSierra/hookline-sources/blob/master/blocklists/index.json).
 - **Accepted sources:** official ones (a regulator or a law) or openly licensed lists only.
 
 ## Credits

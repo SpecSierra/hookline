@@ -8,7 +8,7 @@
 #include "block_lists.h"
 #include "setting.h"
 
-static const char *INDEX_URL = "https://raw.githubusercontent.com/SpecSierra/phonehook-sources/master/blocklists/index.json";
+static const char *INDEX_URL = "https://raw.githubusercontent.com/SpecSierra/hookline-sources/master/blocklists/index.json";
 
 static QNetworkRequest listRequest(QUrl url) {
     QNetworkRequest request(url);
