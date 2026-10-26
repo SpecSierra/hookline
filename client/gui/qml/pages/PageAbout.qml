@@ -55,7 +55,7 @@ Page {
             Label {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * x
-                text: qsTr("French spam lists by Saracroche, licensed CC BY-NC-SA 4.0. Lookup sources belong to their respective owners; Hookline is not endorsed by them.")
+                text: qsTr("French lists by Saracroche, licensed CC BY-NC-SA 4.0. Other countries: the number ranges their regulators reserve for telemarketing.")
                 font.pixelSize: Theme.fontSizeSmall
                 color: Theme.highlightColor
                 wrapMode: Text.Wrap

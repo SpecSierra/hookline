@@ -24,11 +24,6 @@ Page {
                 text: qsTr("Settings")
                 onClicked: pageStack.push(Qt.resolvedUrl("PageAppSettings.qml"))
             }
-            MenuItem {
-                text: qsTr("Look up a number")
-                enabled: _bots.daemonActive
-                onClicked: pageStack.push(Qt.resolvedUrl("PageBotTest.qml"), { name: qsTr("Look up a number"), botId: 0 })
-            }
         }
 
         Column {
@@ -37,15 +32,15 @@ Page {
 
             PageHeader {
                 title: "Hookline"
-                description: qsTr("Caller lookup and call blocking")
+                description: qsTr("Call blocking")
             }
 
             // Everything depends on the daemon: make a stopped one obvious
             ListItem {
                 id: daemonItem
                 contentHeight: Theme.itemSizeMedium
-                visible: !_bots.daemonActive
-                onClicked: _bots.startDaemon()
+                visible: !_service.daemonActive
+                onClicked: _service.startDaemon()
 
                 Icon {
                     id: warningIcon
@@ -67,7 +62,7 @@ Page {
                     }
                     Label {
                         width: parent.width
-                        text: qsTr("Tap to start it. Calls are neither looked up nor blocked.")
+                        text: qsTr("Tap to start it. Calls are not blocked.")
                         font.pixelSize: Theme.fontSizeExtraSmall
                         color: Theme.secondaryColor
                         wrapMode: Text.Wrap
@@ -86,31 +81,21 @@ Page {
 
             StartItem {
                 icon: "image://theme/icon-m-cloud-download"
-                title: qsTr("Data sources")
+                title: qsTr("Block lists")
                 description: {
-                    var lookups = _bots.daemonActive ? _bots.botList.count : 0
                     var lists = BlockLists.index(_setting).filter(function(list) {
                         return BlockLists.isEnabled(_setting, list)
                     }).length
-                    return qsTr("%n lookup source(s)", "", lookups)
-                            + " · " + qsTr("%n block list(s)", "", lists)
+                    return qsTr("%n list(s) enabled", "", lists)
                 }
-                page: "PageSources.qml"
+                page: "PageBlockLists.qml"
             }
 
             StartItem {
                 icon: "image://theme/icon-m-history"
                 title: qsTr("Call log")
-                description: qsTr("Look up or block recent callers")
+                description: qsTr("Block recent callers")
                 page: "PageCallLogStart.qml"
-            }
-
-            StartItem {
-                icon: "image://theme/icon-m-search"
-                title: qsTr("Search")
-                description: qsTr("Find people and businesses")
-                page: "PageSearchStart.qml"
-                enabled: _bots.daemonActive
             }
         }
 

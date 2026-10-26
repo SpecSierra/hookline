@@ -19,7 +19,6 @@ public:
 
     bool checkContactBlock(phonenumber number);
     bool checkManualBlock(phonenumber number);
-    bool checkAutoBlock(phonenumber number);
 
     void hangup();
 

@@ -146,13 +146,3 @@ void blocks::initHistory(int blockId) {
     emit history_changed(&m_history);
 }
 
-void blocks::initSources() {
-    m_sources.setQuery(R"(
-        SELECT bot.name, bot.id FROM bot
-        JOIN bot_tag ON bot.id = bot_tag.bot_id AND bot_tag.tag = 'block'
-        LEFT JOIN block ON block.bot_id = bot.id AND block.type=2
-        WHERE block.bot_id IS NULL
-    )");
-
-    emit sources_changed(&m_sources);
-}

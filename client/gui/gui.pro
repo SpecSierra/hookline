@@ -14,54 +14,26 @@ TARGET = phonehook
 
 CONFIG += sailfishapp c++14
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172 256x256
-QT += dbus xml sql xmlpatterns quick-private
+QT += dbus sql
 
 INCLUDEPATH += ../common
 
 SOURCES += \
     src/phonehook.cpp \
-    src/bots.cpp \
-    src/countries.cpp \
+    src/service.cpp \
     src/blocks.cpp \
     src/calls.cpp \
-    ../common/bot_download.cpp \
     ../common/setting.cpp \
     ../common/util.cpp
 
 OTHER_FILES += qml/phonehook.qml \
     qml/cover/CoverPage.qml \
-    qml/pages/FirstPage.qml \
+    qml/pages/*.qml \
+    qml/pages/*.js \
     rpm/phonehook.changes.in \
     rpm/phonehook.spec \
-    rpm/phonehook.yaml \
     translations/*.ts \
-    phonehook.desktop \
-    qml/pages/PageServerBotList.qml \
-    qml/pages/PageBotDetails.qml \
-    qml/setting/SettingString.qml \
-    qml/setting/SettingBool.qml \
-    qml/pages/PageBotTest.qml \
-    qml/pages/PageAppSettings.qml \
-    qml/popup/gui.qml \
-    qml/popup/images/ph-logo.png \
-    qml/pages/PageBotDownload.qml \
-    qml/pages/PageDownloadWait.qml \
-    qml/setting/SettingPassword.qml \
-    qml/popup/gui2.qml \
-    qml/pages/PageSearchStart.qml \
-    qml/pages/PageSearchResults.qml \
-    qml/pages/PageBlockStart.qml \
-    qml/pages/PageBlockContact.qml \
-    qml/pages/PageBlockHistory.qml \
-    qml/pages/PageCallLogStart.qml \
-    qml/pages/PageBlockAddManual.qml \
-    qml/pages/PageBlockAddSource.qml \
-    qml/pages/PageSources.qml \
-    qml/pages/StartItem.qml \
-    qml/pages/PageAbout.qml \
-    qml/pages/AboutLink.qml \
-    qml/pages/SourceStatus.js \
-    qml/pages/BlockLists.js
+    phonehook.desktop
 
 # to disable building translations every time, comment out the
 # following CONFIG line
@@ -74,16 +46,13 @@ TRANSLATIONS += translations/phonehook-es.ts \
                 translations/phonehook-de.ts
 
 HEADERS += \
-    src/bots.h \
-    src/countries.h \
+    src/service.h \
     src/blocks.h \
     src/db_model.h \
     src/calls.h \
     ../common/setting.h \
     ../common/util.h \
-    ../common/macros.h \
-    ../common/bot_download.h
+    ../common/macros.h
 
-RESOURCES +=
 
 

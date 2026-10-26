@@ -85,7 +85,6 @@ desktop-file-install --delete-original       \
 %attr(2755,root,privileged) %{_bindir}/%{name}
 %attr(2755,root,privileged) %{_bindir}/%{name}-daemon
 %{_datadir}/%{name}
-%{_datadir}/%{name}-daemon
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 /usr/lib/systemd/user/phonehook-daemon.service

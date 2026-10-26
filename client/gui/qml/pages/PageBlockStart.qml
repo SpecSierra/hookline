@@ -18,13 +18,6 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("Block lookup source results")
-                onClicked: {
-                    _blocks.initSources()
-                    pageStack.push(Qt.resolvedUrl("PageBlockAddSource.qml"))
-                }
-            }
-            MenuItem {
                 text: qsTr("Block contact")
                 onClicked: pageStack.push(Qt.resolvedUrl("PageBlockContact.qml"))
             }
@@ -37,7 +30,7 @@ Page {
         ViewPlaceholder {
             enabled: blockView.count === 0
             text: qsTr("No blocking rules")
-            hintText: qsTr("Pull down to block a number, a contact or the spam numbers found by a lookup source")
+            hintText: qsTr("Pull down to block a number or a contact")
         }
 
         delegate: ListItem {
@@ -96,7 +89,7 @@ Page {
                     visible: text !== ""
                     text: model.type === 0 ? (model.number || qsTr("Hidden numbers"))
                         : model.type === 1 ? qsTr("Contact")
-                                           : qsTr("Spam found by this lookup source")
+                                           : qsTr("Lookup source, no longer used")
                     truncationMode: TruncationMode.Fade
                     font.pixelSize: Theme.fontSizeExtraSmall
                     color: blockItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor

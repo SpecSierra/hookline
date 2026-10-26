@@ -28,11 +28,6 @@ Page {
 
             menu: ContextMenu {
                 MenuItem {
-                    text: qsTr("Look up")
-                    visible: model.number.length > 4
-                    onClicked: _bots.testBot(0, model.number)
-                }
-                MenuItem {
                     text: qsTr("Copy number")
                     visible: model.number.length > 0
                     onClicked: Clipboard.text = model.number

@@ -4,7 +4,6 @@
 #include <QObject>
 #include "phonenumber.h"
 #include "dbus_adapter.h"
-#include "lookup_thread.h"
 
 class dbus : public QObject
 {
@@ -19,9 +18,7 @@ public:
     int mobileNetworkCode() { return m_mobileNetworkCode; }
     bool isRoaming() { return m_isRoaming; }
 
-    void processNumber(QString callingNr, bool isTest);
-    void blockLastCall(QString alias);
-    phonenumber lastNumber;
+    void processNumber(QString callingNr);
 
 private:
     QDBusInterface *interface;
@@ -49,7 +46,6 @@ public slots:
     void gotModems(QDBusMessage reply);
     void gotNetworkStatus(QDBusMessage reply);
     void gotNetworkStatusChange(QDBusMessage event);
-    void lookupResult(lookup_thread*);
 
 };
 

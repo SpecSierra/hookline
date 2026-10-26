@@ -8,8 +8,8 @@
 class block_lists;
 
 // Keeps the reject list of the Sailfish OS 5 call filter (voicecall filter
-// plugin) in sync with the block rules, so blocked calls are rejected before
-// they ring. Rules the filter cannot express (a "*" that is not at the end)
+// plugin) in sync with the block rules and block lists, so blocked calls are
+// rejected before they ring. Rules the filter cannot express (a "*" that is not at the end)
 // and older Sailfish OS releases are still handled by hanging up.
 class call_filter : public QObject
 {

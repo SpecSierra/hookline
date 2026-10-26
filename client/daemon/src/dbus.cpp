@@ -192,104 +192,16 @@ void dbus::onIncomingCall(const QDBusMessage &a) {
     qDebug() << "calling number = " << callingNr;
 
 
-    processNumber(callingNr, false);
+    processNumber(callingNr);
 
 }
 
-void dbus::processNumber(QString callingNr, bool isTest) {
-    lastNumber = phonenumber(callingNr,
-                                phonenumber::mobilecc_to_iso32662( dbus::Instance()->mobileCountryCode() ),
-                                QString::number( dbus::Instance()->mobileNetworkCode() ));
+// Calls the voicecall filter did not reject (hidden numbers, "*" in the
+// middle of a rule, older Sailfish OS) are hung up here
+void dbus::processNumber(QString callingNr) {
+    phonenumber number(callingNr,
+                       phonenumber::mobilecc_to_iso32662( dbus::Instance()->mobileCountryCode() ),
+                       QString::number( dbus::Instance()->mobileNetworkCode() ));
 
-    // check type of channel that has opened
-    if(!isTest && blocking::Instance()->preCheckBlock(lastNumber) ) {
-        return;
-    }
-
-    // don't proceed with lookups if number is hidden
-    if(lastNumber.number_local == "") {
-        return;
-    }
-
-    qDebug() << "check settings";
-
-    QSqlQuery qs;
-    qs.exec("SELECT key, value FROM setting");
-
-    bool activateOnSms = false, activateOnlyUnknown = true, enableRoaming = false;
-    Q_UNUSED(activateOnSms)
-    while(qs.next()) {
-        if(qs.value("key").toString() == "activate_only_unknown")
-            activateOnlyUnknown = (qs.value("value").toString() == "true");
-
-        if(qs.value("key").toString() == "activate_on_sms")
-            activateOnSms = (qs.value("value").toString() == "true");
-
-        if(qs.value("key").toString() == "enable_roaming")
-            enableRoaming = (qs.value("value").toString() == "true");
-    }
-
-    qDebug() << "got settings only-unknown=" <<  activateOnlyUnknown << " enable_roaming=" << enableRoaming;
-
-    if(!enableRoaming && dbus::Instance()->isRoaming()) {
-        qDebug() << "disabled when roaming!";
-        return ;
-    }
-
-    if(activateOnlyUnknown) {
-
-        QSqlQuery cq(db::Instance()->getContactsDb() );
-
-        cq.prepare("SELECT contactId FROM PhoneNumbers WHERE normalizedNumber = ?");
-        cq.addBindValue(phonenumber::process(callingNr));
-        if(!cq.exec()) {
-            qDebug() << "error " << cq.lastError().text();
-        }
-
-        while(cq.next()) {
-            qDebug() << "found existing contact with id " << cq.value("contactId").toInt();
-            return ;
-        }
-
-    }
-
-    qDebug() << "after localizing " << lastNumber.number_local;
-    qDebug() << "request raise/activate";
-
-    dbus_adapter::Instance()->set_lookupState("activate:lookup");
-
-    lookup_thread *lt = new lookup_thread();
-
-    qDebug() << "connecting" << lt;
-
-    if(!isTest)
-        connect(lt, &lookup_thread::gotResult, this, &dbus::lookupResult);
-
-    lt->start(lastNumber, QList<int>());
-}
-
-void dbus::lookupResult(lookup_thread *sender) {
-    if(blocking::Instance()->checkAutoBlock(lastNumber)) {
-        qDebug() << "disconnecting signal" << sender;
-        disconnect(sender, &lookup_thread::gotResult, this, &dbus::lookupResult);
-    }
-}
-
-
-void dbus::blockLastCall(QString alias) {
-
-    if(lastNumber.number_international == nullptr || lastNumber.number_international == "") return ;
-    if(alias == "") alias = lastNumber.number_international;
-
-    // crop text if too long
-    if(alias.length() > 23)
-        alias = alias.left(20) + "...";
-
-    QSqlQuery sq;
-    sq.prepare("INSERT INTO block (type, name, number) VALUES(0,?,?)");
-    sq.addBindValue(alias);
-    sq.addBindValue(lastNumber.number_international);
-    qDebug() << "added block! " << sq.exec();
-
-    blocking::Instance()->hangup();
+    blocking::Instance()->preCheckBlock(number);
 }

@@ -58,15 +58,6 @@ QStringList call_filter::rejectedNumbers() {
             numbers << filterEntry(contactNumbers.value(0).toString());
     }
 
-    // Numbers that the auto-blocking sources have already flagged
-    QSqlQuery autoBlocked(R"(
-        SELECT DISTINCT bot_result_cache.telnr FROM block
-        JOIN bot_result_cache ON block.bot_id = bot_result_cache.bot_id
-        WHERE bot_result_cache.block = 1
-    )");
-    while (autoBlocked.next())
-        numbers << filterEntry(autoBlocked.value(0).toString());
-
     // Enabled block lists, already in filter format
     numbers << m_lists->entries();
 

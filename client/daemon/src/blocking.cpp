@@ -47,36 +47,6 @@ bool blocking::checkManualBlock(phonenumber number) {
 }
 
 
-bool blocking::checkAutoBlock(phonenumber number) {
-    QSqlQuery autoBlockQuery(R"(
-        SELECT block.id FROM block JOIN bot_result_cache ON block.bot_id = bot_result_cache.bot_id
-        WHERE bot_result_cache.telnr IN (?,?) AND bot_result_cache.block = 1
-    )");
-
-    autoBlockQuery.addBindValue(number.number_local);
-    autoBlockQuery.addBindValue(number.number_international);
-
-    if(!autoBlockQuery.exec())
-        qDebug() << "check block error" << autoBlockQuery.lastError();
-
-    if(autoBlockQuery.next()) {
-
-        hangup();
-
-        QSqlQuery addBlockHistory(R"(
-            INSERT INTO block_history(block_id,number)
-            VALUES(?,?)
-        )");
-        addBlockHistory.addBindValue(autoBlockQuery.value("id").toInt());
-        addBlockHistory.addBindValue(""+number.number_international);
-        addBlockHistory.exec();
-
-        return true;
-    }
-
-    return false;
-}
-
 bool blocking::checkContactBlock(phonenumber number) {
 
     QSqlQuery blockedContactsQuery("SELECT contact_id FROM block WHERE type=1");
@@ -132,11 +102,7 @@ bool blocking::preCheckBlock(phonenumber number) {
         return true;
     }
 
-    // don't auto-check hidden
-    if(number.number_local == "")
-        return false;
-
-    return checkAutoBlock(number);
+    return false;
 
 }
 

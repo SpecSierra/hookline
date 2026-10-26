@@ -43,14 +43,10 @@ Page {
             property string name: _blocks.contactNameFromNumber(model.remoteUid)
 
             contentHeight: Theme.itemSizeMedium
-            onClicked: _bots.testBot(0, number)
+            onClicked: pageStack.push(Qt.resolvedUrl("PageBlockAddManual.qml"),
+                                      { name: callItem.name, number: callItem.number })
 
             menu: ContextMenu {
-                MenuItem {
-                    text: qsTr("Block")
-                    onClicked: pageStack.push(Qt.resolvedUrl("PageBlockAddManual.qml"),
-                                              { name: callItem.name, number: callItem.number })
-                }
                 MenuItem {
                     text: qsTr("Copy number")
                     onClicked: Clipboard.text = callItem.number
