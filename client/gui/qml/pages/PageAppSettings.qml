@@ -68,6 +68,16 @@ Page {
     */
             TextSwitch {
                 width: parent.width
+                text: qsTr("Block French spam calls")
+                description: qsTr("Daily lists of telemarketing prefixes and most reported numbers by Saracroche (saracroche.org), CC BY-NC-SA 4.0")
+                checked: _setting.get("spam_lists", "true") === "true"
+                onCheckedChanged: {
+                    _setting.put("spam_lists", checked)
+                }
+            }
+
+            TextSwitch {
+                width: parent.width
                 text: qsTr("Enable while roaming")
                 checked: _setting.get("enable_roaming", "false") === "true"
                 onCheckedChanged: {

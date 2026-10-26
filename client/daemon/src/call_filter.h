@@ -14,7 +14,7 @@ class call_filter : public QObject
     Q_OBJECT
 
 public:
-    explicit call_filter(QString dbPath, QObject *parent = 0);
+    call_filter(QString dbPath, QString spamListsPath, QObject *parent = 0);
 
 public slots:
     void sync();
@@ -22,6 +22,7 @@ public slots:
 private:
     QStringList rejectedNumbers();
 
+    QString m_spamListsPath;
     QFileSystemWatcher m_watcher;
     QTimer m_delay;
 };

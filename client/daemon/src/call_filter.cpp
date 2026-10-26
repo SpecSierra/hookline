@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QFile>
 #include <QSqlQuery>
 #include <MDConfItem>
 
@@ -6,8 +7,8 @@
 #include "db.h"
 #include "setting.h"
 
-call_filter::call_filter(QString dbPath, QObject *parent) :
-    QObject(parent)
+call_filter::call_filter(QString dbPath, QString spamListsPath, QObject *parent) :
+    QObject(parent), m_spamListsPath(spamListsPath)
 {
     // The GUI edits the block rules directly in the database
     m_delay.setSingleShot(true);
@@ -63,6 +64,11 @@ QStringList call_filter::rejectedNumbers() {
     )");
     while (autoBlocked.next())
         numbers << filterEntry(autoBlocked.value(0).toString());
+
+    // Downloaded spam lists, already in filter format (see spam_lists)
+    QFile spamLists(m_spamListsPath);
+    if (setting::get("spam_lists", "true") == "true" && spamLists.open(QIODevice::ReadOnly))
+        numbers << QString::fromUtf8(spamLists.readAll()).split("\n");
 
     numbers.removeAll("");
     numbers.removeDuplicates();

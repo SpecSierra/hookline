@@ -17,6 +17,7 @@
 #include "overlay.h"
 #include "auto_update.h"
 #include "call_filter.h"
+#include "spam_lists.h"
 
 void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -65,7 +66,8 @@ int main(int argc, char *argv[])
     QString dataDir = QDir::home().absolutePath() + "/.phonehook";
     QDir::home().mkpath(dataDir);
 
-    call_filter filter(dataDir + "/phonehook.db");
+    call_filter filter(dataDir + "/phonehook.db", dataDir + "/spam_lists.txt");
+    spam_lists spamLists(dataDir + "/spam_lists.txt", &filter);
 
     qDebug() << "create listener";
     dbus listener(app);

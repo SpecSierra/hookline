@@ -12,7 +12,7 @@ debug {
     QMAKE_CXXFLAGS_RELEASE += -O3
 }
 
-QT += dbus xml sql gui-private xmlpatterns
+QT += dbus xml sql gui-private xmlpatterns network
 CONFIG += sailfishapp c++14
 SOURCES += src/ph-daemon.cpp \
     src/robot_base.cpp \
@@ -31,6 +31,7 @@ SOURCES += src/ph-daemon.cpp \
     src/overlay.cpp \
     src/blocking.cpp \
     src/call_filter.cpp \
+    src/spam_lists.cpp \
     src/auto_update.cpp \    
     ../common/bot_download.cpp \
     ../common/util.cpp \
@@ -58,6 +59,7 @@ INCLUDEPATH += ../common
 
 HEADERS += \
     src/call_filter.h \
+    src/spam_lists.h \
     src/robot_base.h \
     src/process_data.h \
     src/lookup_thread.h \
